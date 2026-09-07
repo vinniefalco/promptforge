@@ -40,3 +40,4 @@
 - N38. Represent background work with claim-once completion handles and one bounded wait-any primitive.
 - N39. Declare an inference child ready only after a representative warm-up succeeds; any pre-probe exit is failure.
 - N40. Preserve upstream request IDs and structured status, and never blindly retry work that may already have completed or been billed.
+N69 | observation | Violates A2 @ crates/gateway-local: not determinable from diff | Make launch_options fallible and refuse unknown kinds

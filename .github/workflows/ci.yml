@@ -195,6 +195,12 @@ jobs:
       - name: Test (workshop, concurrent via nextest)
         run: cargo nextest run --locked -p workshop -p workshop-server
 
+      # The headless feature swaps the webview asset layer for a no-op so
+      # server-only integration tests run without the UI bundle. It is not
+      # a default feature, so it needs its own invocation.
+      - name: Test (workshop-server headless)
+        run: cargo nextest run --locked -p workshop-server --features headless
+
       # nextest does not run doctests; the workspace doctest step in the
       # `test` job excludes both workshop crates, so cover them here.
       - name: Doctests (workshop)

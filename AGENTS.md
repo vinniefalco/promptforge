@@ -37,3 +37,14 @@ Multi-crate Rust workspace for the PromptForge pipeline runtime, inference gatew
 - Long-running work reports through `shared-progress`. Producers report operation state, hosts forward it, and renderers format it.
 - Unsafe code stays in its explicitly owned boundary. Every unsafe block documents its safety invariants immediately before the block.
 - Comments explain a non-obvious constraint, ordering requirement, or workaround. Every platform or external-bug workaround cites its upstream issue URL in the explanatory comment.
+
+## Structural Rules
+
+- Dependencies flow one way: shell -> features -> services -> vocabulary. Never add a dependency from a lower tier to a higher one. If Cargo rejects a cycle, the design is wrong, not the graph. On the SPA side, lazy-loaded panels never import the boot shell; shared code lives in services/ or base/.
+- Every workshop-* crate's lib.rs opens with a //! doc listing what the crate may depend on and what it may not. Read it before adding an import. Every SPA concern directory (ui/editor/, ui/agent/, etc.) has the same in its index.ts.
+- No file exceeds 500 lines. If an edit would push a file past 500, split first, then edit.
+
+## SPA and CSS Rules
+
+- CSS lives beside its TypeScript, never in a separate styles/ tree. A designer finds the styles for the agent chat at ui/agent/agent-session.css, not by grepping a flat directory. Every feature directory is self-contained: .ts, .css, and index.ts together.
+- No raw color, size, or spacing values in component CSS. Use --ws-* tokens from tokens/. Primitives go in tokens/base.css, intent aliases in tokens/semantic.css, per-component overrides in tokens/component.css. A designer themes the app by editing semantic.css.

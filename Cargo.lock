@@ -8554,6 +8554,46 @@ dependencies = [
 ]
 
 [[package]]
+name = "workshop-gateway"
+version = "0.0.0"
+dependencies = [
+ "arc-swap",
+ "axum",
+ "futures-util",
+ "promptforge-core-support",
+ "promptforge-model-client",
+ "reqwest 0.12.28",
+ "serde",
+ "serde_json",
+ "shared-progress",
+ "shared-sidecar",
+ "tempfile",
+ "thiserror 2.0.19",
+ "tokio",
+ "tokio-tungstenite",
+ "tracing",
+ "url",
+ "workshop-protocol",
+ "workshop-registry",
+ "workshop-support",
+]
+
+[[package]]
+name = "workshop-menu"
+version = "0.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.19",
+ "tokio",
+ "tracing",
+ "workshop-protocol",
+ "workshop-registry",
+ "workshop-support",
+]
+
+[[package]]
 name = "workshop-protocol"
 version = "0.0.0"
 dependencies = [
@@ -8567,6 +8607,7 @@ name = "workshop-registry"
 version = "0.0.0"
 dependencies = [
  "axum",
+ "serde_json",
  "tokio",
  "workshop-protocol",
 ]
@@ -8610,9 +8651,23 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "url",
+ "workshop-gateway",
+ "workshop-menu",
  "workshop-protocol",
  "workshop-registry",
  "workshop-server",
+ "workshop-status",
+ "workshop-support",
+]
+
+[[package]]
+name = "workshop-status"
+version = "0.0.0"
+dependencies = [
+ "shared-progress",
+ "tokio",
+ "workshop-protocol",
+ "workshop-registry",
  "workshop-support",
 ]
 

@@ -47,6 +47,9 @@ gateway-stt-backend-whisper = { path = "crates/gateway-stt-backend-whisper", ver
 promptforge-web-search = { path = "crates/promptforge-web-search", version = "0.3.0" }
 gateway-web-search = { path = "crates/gateway-web-search", version = "0.3.0" }
 workshop-server = { path = "crates/workshop-server", version = "0.3.0" }
+workshop-protocol = { path = "crates/workshop-protocol", version = "0.0.0" }
+workshop-support = { path = "crates/workshop-support", version = "0.0.0" }
+workshop-registry = { path = "crates/workshop-registry", version = "0.0.0" }
 gateway-whisper-ffi = { path = "crates/gateway-whisper-ffi", version = "0.3.0" }
 promptforge-agent = { path = "crates/promptforge-agent", version = "0.3.0" }
 pulldown-cmark = "0.12"

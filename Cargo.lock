@@ -8554,6 +8554,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "workshop-protocol"
+version = "0.0.0"
+dependencies = [
+ "promptforge-core-support",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "workshop-registry"
+version = "0.0.0"
+dependencies = [
+ "axum",
+ "tokio",
+ "workshop-protocol",
+]
+
+[[package]]
 name = "workshop-server"
 version = "0.3.0"
 dependencies = [
@@ -8592,7 +8610,24 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "url",
+ "workshop-protocol",
+ "workshop-registry",
  "workshop-server",
+ "workshop-support",
+]
+
+[[package]]
+name = "workshop-support"
+version = "0.0.0"
+dependencies = [
+ "axum",
+ "serde",
+ "tempfile",
+ "thiserror 2.0.19",
+ "tokio",
+ "toml 0.8.2",
+ "tower",
+ "tracing",
 ]
 
 [[package]]

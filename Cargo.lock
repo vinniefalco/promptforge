@@ -8617,14 +8617,10 @@ name = "workshop-server"
 version = "0.3.0"
 dependencies = [
  "anyhow",
- "arc-swap",
- "async-trait",
  "axum",
  "build-ui",
- "dunce",
  "futures-util",
  "open",
- "percent-encoding",
  "promptforge-agent",
  "promptforge-core",
  "promptforge-core-support",
@@ -8632,7 +8628,6 @@ dependencies = [
  "promptforge-tool-picker",
  "promptforge-tools",
  "promptforge-vfs",
- "rand 0.9.5",
  "reqwest 0.12.28",
  "rust-embed",
  "serde",
@@ -8640,13 +8635,11 @@ dependencies = [
  "shared-loopback",
  "shared-progress",
  "shared-sidecar",
- "shared-vfs",
  "socket2",
  "tempfile",
  "thiserror 2.0.19",
  "tokio",
  "tokio-tungstenite",
- "toml 0.8.2",
  "tower",
  "tracing",
  "tracing-subscriber",
@@ -8656,6 +8649,40 @@ dependencies = [
  "workshop-protocol",
  "workshop-registry",
  "workshop-server",
+ "workshop-sessions",
+ "workshop-status",
+ "workshop-support",
+ "workshop-workspace",
+]
+
+[[package]]
+name = "workshop-sessions"
+version = "0.0.0"
+dependencies = [
+ "async-trait",
+ "axum",
+ "futures-util",
+ "promptforge-agent",
+ "promptforge-core",
+ "promptforge-core-support",
+ "promptforge-model-client",
+ "promptforge-tool-picker",
+ "promptforge-tools",
+ "promptforge-vfs",
+ "rand 0.9.5",
+ "serde",
+ "serde_json",
+ "shared-vfs",
+ "tempfile",
+ "thiserror 2.0.19",
+ "tokio",
+ "tokio-tungstenite",
+ "tower",
+ "tracing",
+ "workshop-gateway",
+ "workshop-menu",
+ "workshop-protocol",
+ "workshop-registry",
  "workshop-status",
  "workshop-support",
 ]
@@ -8683,6 +8710,24 @@ dependencies = [
  "toml 0.8.2",
  "tower",
  "tracing",
+]
+
+[[package]]
+name = "workshop-workspace"
+version = "0.0.0"
+dependencies = [
+ "axum",
+ "dunce",
+ "percent-encoding",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.19",
+ "tokio",
+ "tower",
+ "workshop-protocol",
+ "workshop-registry",
+ "workshop-support",
 ]
 
 [[package]]

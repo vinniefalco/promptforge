@@ -5,4 +5,4 @@ rustflags = ["-C", "target-feature=+crt-static"]
 
 [alias]
 workshop = "run -p build-workshop --"
-xtask = "run -p xtask --"
+xtask = "run -p build-xtask --"

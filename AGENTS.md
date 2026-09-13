@@ -42,7 +42,7 @@ Multi-crate Rust workspace for the PromptForge pipeline runtime, inference gatew
 
 - Dependencies flow one way: shell -> features -> services -> vocabulary. Never add a dependency from a lower tier to a higher one. If Cargo rejects a cycle, the design is wrong, not the graph. On the SPA side, lazy-loaded panels never import the boot shell; shared code lives in services/ or base/.
 - Every workshop-* crate's lib.rs opens with a //! doc carrying a `## Invariants` marker that lists what the crate may depend on and what it may not. Read it before adding an import. Every SPA concern directory (ui/editor/, ui/agent/, etc.) has the same in its index.ts.
-- No file exceeds 500 lines. If an edit would push a file past 500, split first, then edit. `cargo test -p xtask` enforces the tier graph, the lint inheritance, and the ceiling over the Rust files in the workshop crates carrying the marker; the Tauri shell (the `workshop` crate) is exempt until the headless agent mode plan.
+- No file exceeds 500 lines. If an edit would push a file past 500, split first, then edit. `cargo test -p build-xtask` enforces the tier graph, the lint inheritance, and the ceiling over the Rust files in the workshop crates carrying the marker; the Tauri shell (the `workshop` crate) is exempt until the headless agent mode plan.
 
 ## SPA and CSS Rules
 

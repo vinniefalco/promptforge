@@ -4859,12 +4859,10 @@ name = "promptforge-model-client"
 version = "0.3.0"
 dependencies = [
  "axum",
- "futures-util",
  "promptforge-tool-picker",
  "reqwest 0.12.28",
  "serde",
  "serde_json",
- "shared-progress",
  "shared-promptforge-api",
  "thiserror 2.0.19",
  "tokio",

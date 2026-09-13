@@ -8663,7 +8663,6 @@ dependencies = [
  "async-trait",
  "axum",
  "futures-util",
- "promptforge-agent",
  "promptforge-core",
  "promptforge-core-support",
  "promptforge-model-client",

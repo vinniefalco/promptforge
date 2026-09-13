@@ -23,6 +23,7 @@ Multi-crate Rust workspace for the PromptForge pipeline runtime, inference gatew
 - Workshop crates are named workshop-* and must not depend on gateway crates
 - Gateway crates are named gateway-* and must not depend on promptforge or workshop crates
 - PromptForge crates are named promptforge-* and must not depend on gateway or workshop crates
+- PromptForge is one door: crates outside the promptforge-* family may depend only on promptforge-api, never on the internal promptforge-* substrate crates
 - Shared crates are named shared-*, contain the public API surface across products and downstream crates, and must not depend on any product crates
 - Crates named build-* are for building specific outputs
 - Dependency rules bind all kinds: normal, dev, build, and target-specific dependencies
@@ -42,7 +43,7 @@ Multi-crate Rust workspace for the PromptForge pipeline runtime, inference gatew
 
 - Dependencies flow one way: shell -> features -> services -> vocabulary. Never add a dependency from a lower tier to a higher one. If Cargo rejects a cycle, the design is wrong, not the graph. On the SPA side, lazy-loaded panels never import the boot shell; shared code lives in services/ or base/.
 - Every workshop-* crate's lib.rs opens with a //! doc carrying a `## Invariants` marker that lists what the crate may depend on and what it may not. Read it before adding an import. Every SPA concern directory (ui/editor/, ui/agent/, etc.) has the same in its index.ts.
-- No file exceeds 500 lines. If an edit would push a file past 500, split first, then edit. `cargo test -p build-xtask` enforces the tier graph, the lint inheritance, and the ceiling over the Rust files in the workshop crates carrying the marker; the Tauri shell (the `workshop` crate) is exempt until the headless agent mode plan.
+- No file exceeds 500 lines. If an edit would push a file past 500, split first, then edit. `cargo test -p build-xtask` enforces the tier graph, the lint inheritance, the ceiling over the Rust files in the workshop crates carrying the marker, and the product-boundary matrix above (including the one-door rule) across every workspace manifest; the Tauri shell (the `workshop` crate) is exempt until the headless agent mode plan.
 
 ## SPA and CSS Rules
 

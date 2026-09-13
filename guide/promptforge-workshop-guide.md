@@ -77,7 +77,7 @@ The keys you are most likely to set:
 - `gateway.api_key` supplies the bearer key for the gateway API. An empty key sends no `Authorization` header, which is right for a gateway running with authentication disabled.
 - `server.bind` is honored only by the standalone `workshop-server` binary. The desktop application owns its listener and always binds `127.0.0.1` on an OS-assigned port.
 - `server.state_dir` chooses where the Workshop keeps persistent state. Agent session event logs live under `state_dir/sessions/`, and the per-profile model memory is written there. It defaults to the config file's own directory.
-- `agents.path` chooses which directory of `.lua` agent programs is launchable. The default is `agents/` beside the config file. A missing directory offers no agents; that is a state, not an error.
+- `agents.path` chooses which directory of `.md` agent prompts is launchable. The default is `agents/` beside the config file. A missing directory offers no agents; that is a state, not an error.
 
 String values support `${VAR}` environment interpolation, so you can keep secrets out of the file. A literal dollar sign is written `$$`. An unset variable interpolates to the empty string instead of failing startup.
 
@@ -379,7 +379,7 @@ You have a model selected and chat is ready. This chapter teaches you the chat s
 
 The Agent Session panel on the right side of the window is where you talk to the selected model. Chat always runs as a live agent session, not a one-shot buffered request. Every reply streams through the open session, which opens instantly and stays open for the whole session.
 
-The default chat is a transparent pass-through with no added system prompt and no tools. Your messages go to the model currently selected in the interface. A fresh install always offers this working built-in chat agent, even when there is no agents directory at all. Later you can add your own agents by dropping `.lua` files into the agents directory; each file appears as a launchable agent under its file-stem name in a sorted list, and a newly added agent file shows up in the agent list on the next connect, without a restart. Placing a `chat.lua` file in the agents directory shadows the built-in one, so you can replace the default chat with your own program. An existing `chat.lua` that cannot be read surfaces its error instead of silently serving the embedded source.
+The default chat is a transparent pass-through with no added system prompt and no tools. Your messages go to the model currently selected in the interface. A fresh install always offers this working built-in chat agent, even when there is no agents directory at all. Later you can add your own agents by dropping `.md` prompt files into the agents directory; each file appears as a launchable agent under its file-stem name in a sorted list, and a newly added agent file shows up in the agent list on the next connect, without a restart. Placing a `chat.md` file in the agents directory shadows the built-in one, so you can replace the default chat with your own prompt. An existing `chat.md` that cannot be read surfaces its error instead of silently serving the embedded source.
 
 To send your first message:
 

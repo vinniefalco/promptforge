@@ -4,39 +4,57 @@
 
 # Agent programs
 
-This chapter teaches you what an agent program is, the file you write, and how the host runs it. Learn it first, because everything an agent does - talking to a model, calling a tool, reading what happened - is a call made from this one file.
+This chapter teaches you what an agent is, the file you write, and how the Workshop runs it. Learn it first, because an agent is an ordinary PromptForge prompt document: everything the prompt language gives a prompt - sections, Lua blocks, model rounds, tools, the store - an agent has too. What makes it an agent is only where the file lives and who is listening.
 
 ## Write the smallest working agent
 
-````lua
+````markdown
+---
+name: hello
+description: The smallest working agent.
+promptforge: 0
+---
+
+# Hello
+
+## Speak
+
+```lua
 log('hello from my agent')
+```
 ````
 
-Save that one line in a file named `hello.lua`. The file is the whole agent. When the host runs it, the `log` call records the message `hello from my agent` in the run's event stream, and the program runs to its end.
+Save that file as `hello.md` in the agents directory. The file is the whole agent: frontmatter that makes it a prompt, one title, one section, one Lua block. There is no manifest, no registration step, and no second file. When the host runs it, the `log` call records the message `hello from my agent` in the run's event stream, and the prompt runs to its end.
 
-An agent is one `.lua` program. There is no manifest, no registration step, and no second file. The program you save is the program the host runs.
+## How the Workshop runs an agent
 
-## How the host runs the program
+The Workshop discovers agents by reading the agents directory: every `.md` file there is a launchable agent, listed under its file-stem name in a sorted list. Discovery reads the directory per request, so a file you add shows up in the agent list on the next connect, with no restart. A missing or unreadable directory is a state, not an error: the list simply offers the built-in chat alone.
 
-The host compiles your file as Lua 5.5 and runs it as a single long-running Lua coroutine. One run is one coroutine, driven from the first line to the end of the program.
+Launching an agent parses the file as a PromptForge prompt and runs it on the unified document runtime, the same runtime that runs every other prompt. One launch is one prompt run: sections walk in order, Lua blocks suspend on host calls and resume with their answers, and the run ends when the document ends - or when the operator cancels it.
 
-Your program keeps its own local state across the whole session. A local variable you set early is still there at the end, because the same coroutine runs every line.
+The directory itself is a configuration value: `agents.path` in `workshop.toml`. The default is `agents/` beside the config file.
 
 ## The agent's name
 
-The agent's name is the `.lua` file stem. Save the program as `hello.lua` and the agent's name is `hello`. Agents have no sections, so that name is the whole identity.
+The agent's name is the `.md` file stem. Save the prompt as `hello.md` and the agent's name is `hello`. Discovery yields bare stems only, so a launch request can never be coaxed into naming a path.
 
-Every event your agent emits carries the agent's name as its section label. The workshop UI and the event log both key on that name, so the name in the file stem is the name you see everywhere the run leaves a trace.
+The name follows the run everywhere it leaves a trace: the agent list, the session panel, and the persisted event log all key on it.
 
-## The host surface
+## The built-in chat and the shadow
 
-Your program reaches the host through a shared set of calls. `models.infer` runs one model completion. `tools.call` dispatches a tool. `store` reads and writes files. `var` holds per-run state. `log` records a message in the event stream. Cooperative cancellation lets the host stop the run.
+A fresh install always offers a working chat agent, even when there is no agents directory at all. The built-in `chat` is a Markdown prompt embedded in the Workshop at compile time, and discovery always lists it.
 
-Three calls do not exist in an agent: `call`, `fanout`, and `jump`. They are absent, not stubbed. An agent that calls one fails on an undefined global.
+Save your own prompt as `chat.md` in the agents directory and it shadows the embedded source: the list still shows one `chat`, but launching it runs your file. That is how your own agent takes over the chat role. An existing `chat.md` that cannot be read surfaces its error instead of silently serving the embedded source.
+
+## The session surface
+
+An agent prompt runs with two extras an unattached prompt does not have, both installed by the session. `user_input()` suspends the run until the operator types an answer, and returns the answer text together with an availability flag. `ui()` returns a fresh snapshot of host state on every call; its `selected_model` field names the model currently selected in the interface, so an agent that re-reads it each turn follows the operator's menu choice.
+
+Everything else is the prompt language, exactly as the Prompt Language set teaches it: `models.infer` and `models.loop` run model rounds, `tools.add` brings tools into scope, `store` reads and writes files, `var` holds per-run state, and `log` records messages in the event stream.
 
 ## The moving parts
 
-Two Rust crates carry the agent surface. `promptforge-agent` is the agent executor that runs your program. `promptforge-lua` is the Lua host runtime your program calls into. The workshop's built-in chat is no longer an agent program: it is an embedded Markdown prompt on the unified document runtime. Save your own program as `chat.lua` in the agents directory and it shadows the built-in, so your agent can take over the chat role.
+Two crates carry an agent run. `workshop-sessions` owns discovery, launch, and the session extras: the input broker behind `user_input()`, the `ui()` snapshot, and the persisting event log. `promptforge-core` is the unified runtime that parses and runs the prompt itself. The final chapter of this set walks through the built-in chat program, the one agent every install already has.
 
 ---
 
@@ -473,7 +491,7 @@ Every tool call is raced against the cancel signal. On cancel, the tool future i
 
 # The full loop
 
-This chapter assembles the complete agent: a chat surface written as one `.lua` program. The workshop's built-in chat is an embedded Markdown prompt on the unified document runtime, but a program saved as `chat.lua` in the agents directory shadows it, so the chat you already use is a role your own agent can take. Walk through that program turn by turn, because everything you have learned so far shows up in it, working together.
+This chapter assembles the complete agent: the built-in chat itself, one Markdown prompt embedded in the Workshop. A prompt saved as `chat.md` in the agents directory shadows it, so the chat you already use is a role your own agent can take. Walk through that program turn by turn, because the whole session surface shows up in it, working together.
 
 ## A chat agent
 
@@ -481,45 +499,59 @@ A chat agent is a transparent pass-through. It advertises no tools and sets no s
 
 ## One turn
 
-The agent is an infinite loop. Each turn does the same five things, in order.
+The agent is one infinite loop in a single Lua block. Each turn does the same four things, in order.
 
-1. Request the operator's next message by invoking the `user_input` tool through `tools.call`.
-2. Read the event log with `runtime.events()`.
-3. Build the model's message list from the log: map each `user_message` event to `role = 'user'` and each `agent_message` event to `role = 'assistant'`, reading the text from `event.content`.
-4. Read the operator's selected model from the `ui()` snapshot's `selected_model` field.
-5. Call `models.chat` under `pcall` with that model, then loop back to step 1.
+1. Call `user_input()` to request the operator's next message, and return from the program when input is no longer available.
+2. Append the operator's message to the retained history list.
+3. Read the operator's selected model from the `ui()` snapshot's `selected_model` field.
+4. Run `models.loop` over the history under that model, wrapped in `pcall`, then loop back to step 1.
 
 ## The full program
 
-````lua
+````markdown
+---
+name: chat
+description: The built-in Workshop chat agent on the unified runtime.
+promptforge: 0
+---
+
+# Chat
+
+The built-in chat agent: a transparent pass-through between the operator
+and the selected model. The message list is an explicit Lua value retained
+across turns; the model is re-read from the host snapshot every turn, so a
+menu selection change takes effect on the next turn.
+
+## Conversation
+
+```lua
+local history = messages.new()
 while true do
-  tools.call('user_input', {})
-  local events = runtime.events()
-  local messages = {}
-  for i = 1, #events do
-    local event = events[i]
-    if event.kind == 'user_message' then
-      messages[#messages + 1] = { role = 'user', content = event.content }
-    elseif event.kind == 'agent_message' then
-      messages[#messages + 1] = { role = 'assistant', content = event.content }
+    local text, available = user_input()
+    if not available then
+        return
     end
-  end
-  pcall(models.chat, messages, { model = ui().selected_model })
+    history:user(text)
+    local selected = ui().selected_model
+    if selected then
+        pcall(function() return models.loop(models.get(selected), history) end)
+    end
 end
+```
 ````
 
-This is the whole chat surface. Every line is a call you already know.
+This is the whole chat surface. Work through the lines. `messages.new()` builds the empty conversation list once, before the loop starts. `user_input()` suspends the run until the operator answers, and returns the answer text together with an availability flag; when the flag reads false, the program returns instead of spinning on a dead session. `history:user(text)` appends the operator's message to the list. `ui().selected_model` reads the interface's current model selection, and `models.get(selected)` resolves that selection to a bound handle. `models.loop(handle, history)` runs the model round over the list, and the reply is appended to that same list as the final record, so the list the program passed in comes back one turn longer.
 
-## Why the log is the state
+## Why the list is the state
 
-Notice what the program does not do: it never stores the conversation in a variable. Every turn rebuilds its message list from the event log instead of holding state in the program. The `user_input` call asks the operator for the next message, and that message arrives in the log as a `user_message` event, where the next rebuild picks it up. The agent's own replies sit in the log as `agent_message` events, and the same rebuild maps them to `assistant` messages.
+Notice what the program never does: rebuild the conversation. The list is created once and retained across turns, and both sides accumulate in it - the program appends each operator message with `history:user(text)`, and `models.loop` appends each assistant reply as it completes. The next turn's model round therefore sees the whole conversation, and the program never copies, re-derives, or re-reads anything.
 
-This is what makes the agent restartable. A relaunch over retained or reloaded history resumes the conversation exactly where it stood, because the whole conversation is in the log and the program rebuilds from it on every turn. A turn-cancel or a restart loses nothing.
+Because the model is re-read from the `ui()` snapshot on every turn, never captured once before the loop, a menu selection change takes effect on the very next turn.
 
 ## Why pcall wraps the model call
 
-The loop runs `models.chat` under `pcall` because the current chat survives transport errors, and so must this one. A failed call does not kill the agent. The session surfaces the failure to the operator, and the loop returns to `user_input` for the next turn.
+The loop runs `models.loop` under `pcall` because chat survives transport errors, and so must this program. A failed round does not kill the agent. The session surfaces the failure to the operator, and the loop returns to `user_input()` for the next turn.
 
 ## Grow from here
 
-Start from this program and add one capability at a time. Advertise a tool with `opts.tools` and answer the requested calls. Save notes with `store.write`. Keep a counter in `var`. The loop does not change. The turns just do more.
+Start from this program and add one capability at a time. Bring a tool into scope with `tools.add` before the loop call and the model can ask for it. Save notes with `store.write`. Keep a counter in `var`. The loop does not change. The turns just do more.

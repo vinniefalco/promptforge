@@ -73,7 +73,7 @@ The keys you are most likely to set:
 - `gateway.api_key` supplies the bearer key for the gateway API. An empty key sends no `Authorization` header, which is right for a gateway running with authentication disabled.
 - `server.bind` is honored only by the standalone `workshop-server` binary. The desktop application owns its listener and always binds `127.0.0.1` on an OS-assigned port.
 - `server.state_dir` chooses where the Workshop keeps persistent state. Agent session event logs live under `state_dir/sessions/`, and the per-profile model memory is written there. It defaults to the config file's own directory.
-- `agents.path` chooses which directory of `.lua` agent programs is launchable. The default is `agents/` beside the config file. A missing directory offers no agents; that is a state, not an error.
+- `agents.path` chooses which directory of `.md` agent prompts is launchable. The default is `agents/` beside the config file. A missing directory offers no agents; that is a state, not an error.
 
 String values support `${VAR}` environment interpolation, so you can keep secrets out of the file. A literal dollar sign is written `$$`. An unset variable interpolates to the empty string instead of failing startup.
 

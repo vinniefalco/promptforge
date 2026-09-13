@@ -1,36 +1,53 @@
 # Agent programs
 
-This chapter teaches you what an agent program is, the file you write, and how the host runs it. Learn it first, because everything an agent does - talking to a model, calling a tool, reading what happened - is a call made from this one file.
+This chapter teaches you what an agent is, the file you write, and how the Workshop runs it. Learn it first, because an agent is an ordinary PromptForge prompt document: everything the prompt language gives a prompt - sections, Lua blocks, model rounds, tools, the store - an agent has too. What makes it an agent is only where the file lives and who is listening.
 
 ## Write the smallest working agent
 
-````lua
+````markdown
+---
+name: hello
+description: The smallest working agent.
+promptforge: 0
+---
+
+# Hello
+
+## Speak
+
+```lua
 log('hello from my agent')
+```
 ````
 
-Save that one line in a file named `hello.lua`. The file is the whole agent. When the host runs it, the `log` call records the message `hello from my agent` in the run's event stream, and the program runs to its end.
+Save that file as `hello.md` in the agents directory. The file is the whole agent: frontmatter that makes it a prompt, one title, one section, one Lua block. There is no manifest, no registration step, and no second file. When the host runs it, the `log` call records the message `hello from my agent` in the run's event stream, and the prompt runs to its end.
 
-An agent is one `.lua` program. There is no manifest, no registration step, and no second file. The program you save is the program the host runs.
+## How the Workshop runs an agent
 
-## How the host runs the program
+The Workshop discovers agents by reading the agents directory: every `.md` file there is a launchable agent, listed under its file-stem name in a sorted list. Discovery reads the directory per request, so a file you add shows up in the agent list on the next connect, with no restart. A missing or unreadable directory is a state, not an error: the list simply offers the built-in chat alone.
 
-The host compiles your file as Lua 5.5 and runs it as a single long-running Lua coroutine. One run is one coroutine, driven from the first line to the end of the program.
+Launching an agent parses the file as a PromptForge prompt and runs it on the unified document runtime, the same runtime that runs every other prompt. One launch is one prompt run: sections walk in order, Lua blocks suspend on host calls and resume with their answers, and the run ends when the document ends - or when the operator cancels it.
 
-Your program keeps its own local state across the whole session. A local variable you set early is still there at the end, because the same coroutine runs every line.
+The directory itself is a configuration value: `agents.path` in `workshop.toml`. The default is `agents/` beside the config file.
 
 ## The agent's name
 
-The agent's name is the `.lua` file stem. Save the program as `hello.lua` and the agent's name is `hello`. Agents have no sections, so that name is the whole identity.
+The agent's name is the `.md` file stem. Save the prompt as `hello.md` and the agent's name is `hello`. Discovery yields bare stems only, so a launch request can never be coaxed into naming a path.
 
-Every event your agent emits carries the agent's name as its section label. The workshop UI and the event log both key on that name, so the name in the file stem is the name you see everywhere the run leaves a trace.
+The name follows the run everywhere it leaves a trace: the agent list, the session panel, and the persisted event log all key on it.
 
-## The host surface
+## The built-in chat and the shadow
 
-Your program reaches the host through a shared set of calls. `models.infer` runs one model completion. `tools.call` dispatches a tool. `store` reads and writes files. `var` holds per-run state. `log` records a message in the event stream. Cooperative cancellation lets the host stop the run.
+A fresh install always offers a working chat agent, even when there is no agents directory at all. The built-in `chat` is a Markdown prompt embedded in the Workshop at compile time, and discovery always lists it.
 
-Three calls do not exist in an agent: `call`, `fanout`, and `jump`. They are absent, not stubbed. An agent that calls one fails on an undefined global.
+Save your own prompt as `chat.md` in the agents directory and it shadows the embedded source: the list still shows one `chat`, but launching it runs your file. That is how your own agent takes over the chat role. An existing `chat.md` that cannot be read surfaces its error instead of silently serving the embedded source.
+
+## The session surface
+
+An agent prompt runs with two extras an unattached prompt does not have, both installed by the session. `user_input()` suspends the run until the operator types an answer, and returns the answer text together with an availability flag. `ui()` returns a fresh snapshot of host state on every call; its `selected_model` field names the model currently selected in the interface, so an agent that re-reads it each turn follows the operator's menu choice.
+
+Everything else is the prompt language, exactly as the Prompt Language set teaches it: `models.infer` and `models.loop` run model rounds, `tools.add` brings tools into scope, `store` reads and writes files, `var` holds per-run state, and `log` records messages in the event stream.
 
 ## The moving parts
 
-Two Rust crates carry the agent surface. `promptforge-agent` is the agent executor that runs your program. `promptforge-lua` is the Lua host runtime your program calls into. The workshop's built-in chat is no longer an agent program: it is an embedded Markdown prompt on the unified document runtime. Save your own program as `chat.lua` in the agents directory and it shadows the built-in, so your agent can take over the chat role.
-
+Two crates carry an agent run. `workshop-sessions` owns discovery, launch, and the session extras: the input broker behind `user_input()`, the `ui()` snapshot, and the persisting event log. `promptforge-core` is the unified runtime that parses and runs the prompt itself. The final chapter of this set walks through the built-in chat program, the one agent every install already has.

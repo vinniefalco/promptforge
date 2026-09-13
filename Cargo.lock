@@ -4830,7 +4830,6 @@ dependencies = [
  "axum",
  "criterion",
  "mlua",
- "promptforge-core-support",
  "promptforge-lua",
  "promptforge-model-client",
  "promptforge-parser",
@@ -4842,21 +4841,11 @@ dependencies = [
  "rand 0.9.5",
  "serde",
  "serde_json",
+ "shared-promptforge-api",
  "shared-vfs",
  "thiserror 2.0.19",
  "time",
  "tokio",
-]
-
-[[package]]
-name = "promptforge-core-support"
-version = "0.3.0"
-dependencies = [
- "rand 0.9.5",
- "serde",
- "serde_json",
- "tokio",
- "tokio-util",
 ]
 
 [[package]]
@@ -4866,12 +4855,12 @@ dependencies = [
  "async-trait",
  "criterion",
  "mlua",
- "promptforge-core-support",
  "promptforge-model-client",
  "promptforge-store",
  "promptforge-tools",
  "promptforge-vfs",
  "serde_json",
+ "shared-promptforge-api",
  "shared-vfs",
  "thiserror 2.0.19",
  "tokio",
@@ -4883,12 +4872,12 @@ version = "0.3.0"
 dependencies = [
  "axum",
  "futures-util",
- "promptforge-core-support",
  "promptforge-tool-picker",
  "reqwest 0.12.28",
  "serde",
  "serde_json",
  "shared-progress",
+ "shared-promptforge-api",
  "thiserror 2.0.19",
  "tokio",
  "tracing",
@@ -4900,11 +4889,11 @@ name = "promptforge-parser"
 version = "0.3.0"
 dependencies = [
  "mlua",
- "promptforge-core-support",
  "promptforge-lua",
  "pulldown-cmark",
  "serde",
  "serde_yaml_ng",
+ "shared-promptforge-api",
  "thiserror 2.0.19",
 ]
 
@@ -6082,6 +6071,17 @@ dependencies = [
  "serde_json",
  "tokio",
  "tracing",
+]
+
+[[package]]
+name = "shared-promptforge-api"
+version = "0.3.0"
+dependencies = [
+ "rand 0.9.5",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tokio-util",
 ]
 
 [[package]]
@@ -8541,12 +8541,12 @@ dependencies = [
  "arc-swap",
  "axum",
  "futures-util",
- "promptforge-core-support",
  "promptforge-model-client",
  "reqwest 0.12.28",
  "serde",
  "serde_json",
  "shared-progress",
+ "shared-promptforge-api",
  "shared-sidecar",
  "tempfile",
  "thiserror 2.0.19",
@@ -8578,9 +8578,9 @@ dependencies = [
 name = "workshop-protocol"
 version = "0.0.0"
 dependencies = [
- "promptforge-core-support",
  "serde",
  "serde_json",
+ "shared-promptforge-api",
 ]
 
 [[package]]
@@ -8603,7 +8603,6 @@ dependencies = [
  "futures-util",
  "open",
  "promptforge-core",
- "promptforge-core-support",
  "promptforge-model-client",
  "promptforge-tool-picker",
  "promptforge-tools",
@@ -8614,6 +8613,7 @@ dependencies = [
  "serde_json",
  "shared-loopback",
  "shared-progress",
+ "shared-promptforge-api",
  "shared-sidecar",
  "socket2",
  "tempfile",
@@ -8643,7 +8643,6 @@ dependencies = [
  "axum",
  "futures-util",
  "promptforge-core",
- "promptforge-core-support",
  "promptforge-model-client",
  "promptforge-tool-picker",
  "promptforge-tools",
@@ -8651,6 +8650,7 @@ dependencies = [
  "rand 0.9.5",
  "serde",
  "serde_json",
+ "shared-promptforge-api",
  "shared-vfs",
  "tempfile",
  "thiserror 2.0.19",

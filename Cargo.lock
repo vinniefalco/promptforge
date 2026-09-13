@@ -4804,18 +4804,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "product-integration-tests"
-version = "0.3.0"
-dependencies = [
- "axum",
- "gateway",
- "promptforge-model-client",
- "serde_json",
- "tempfile",
- "tokio",
-]
-
-[[package]]
 name = "promptforge-api"
 version = "0.3.0"
 dependencies = [

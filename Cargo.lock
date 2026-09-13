@@ -4816,14 +4816,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "promptforge"
-version = "0.3.0"
-dependencies = [
- "promptforge-core",
-]
-
-[[package]]
-name = "promptforge-core"
+name = "promptforge-api"
 version = "0.3.0"
 dependencies = [
  "async-trait",
@@ -8593,7 +8586,7 @@ dependencies = [
  "build-ui",
  "futures-util",
  "open",
- "promptforge-core",
+ "promptforge-api",
  "promptforge-model-client",
  "promptforge-tool-picker",
  "promptforge-vfs",
@@ -8632,7 +8625,7 @@ dependencies = [
  "async-trait",
  "axum",
  "futures-util",
- "promptforge-core",
+ "promptforge-api",
  "promptforge-model-client",
  "promptforge-tool-picker",
  "promptforge-vfs",

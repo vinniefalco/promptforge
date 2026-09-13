@@ -294,7 +294,7 @@ impl StoreError {
 
     /// Builds [`StoreError::NotFound`] for `path`.
     ///
-    /// `#[doc(hidden)]`: a cross-crate seam for `promptforge-core` test
+    /// `#[doc(hidden)]`: a cross-crate seam for `promptforge-api` test
     /// doubles, which cannot construct the `#[non_exhaustive]` variant
     /// directly. Not host API.
     #[doc(hidden)]
@@ -307,7 +307,7 @@ impl StoreError {
 
     /// Builds [`StoreError::InvalidRange`] for `path` with `reason`.
     ///
-    /// `#[doc(hidden)]`: a cross-crate seam for `promptforge-core`'s Lua
+    /// `#[doc(hidden)]`: a cross-crate seam for `promptforge-api`'s Lua
     /// host, which refuses an `end` without a `start` with the same
     /// `InvalidRange` a zero bound earns but cannot construct the
     /// `#[non_exhaustive]` variant directly. Not host API.

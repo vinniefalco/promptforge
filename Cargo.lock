@@ -4819,27 +4819,7 @@ dependencies = [
 name = "promptforge"
 version = "0.3.0"
 dependencies = [
- "promptforge-agent",
  "promptforge-core",
-]
-
-[[package]]
-name = "promptforge-agent"
-version = "0.3.0"
-dependencies = [
- "async-trait",
- "axum",
- "mlua",
- "promptforge-core-support",
- "promptforge-lua",
- "promptforge-model-client",
- "promptforge-store",
- "promptforge-tools",
- "promptforge-vfs",
- "serde_json",
- "shared-vfs",
- "thiserror 2.0.19",
- "tokio",
 ]
 
 [[package]]
@@ -8622,7 +8602,6 @@ dependencies = [
  "build-ui",
  "futures-util",
  "open",
- "promptforge-agent",
  "promptforge-core",
  "promptforge-core-support",
  "promptforge-model-client",

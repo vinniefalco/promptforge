@@ -56,7 +56,6 @@ workshop-registry = { path = "crates/workshop-registry", version = "0.0.0" }
 workshop-sessions = { path = "crates/workshop-sessions", version = "0.0.0" }
 workshop-workspace = { path = "crates/workshop-workspace", version = "0.0.0" }
 gateway-whisper-ffi = { path = "crates/gateway-whisper-ffi", version = "0.3.0" }
-promptforge-agent = { path = "crates/promptforge-agent", version = "0.3.0" }
 pulldown-cmark = "0.12"
 serde = { version = "1", features = ["derive"] }
 serde_yaml_ng = "0.10"

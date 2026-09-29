@@ -16,7 +16,9 @@ writer never sees a finding. review splits an audit into
 corrections-<stem>-<round>.md and findings-audit-<stem>-<round>.md, and
 scores the matching reader file into review-<stem>-<round>.json. mentions
 gathers, for each plan term and each item named on more than one page, the
-paragraphs that mention it, in batches of at most 10 subjects. consistency
+paragraphs that mention it, in batches of at most 10 subjects; it reads
+only pages in scope and pages that pass checks.py, since a failing page
+outside the scope is due for a rewrite and is not evidence. consistency
 splits the consistency files into fixes-<stem>.md per page in scope and
 findings-consistency.md. voice copies the first tour of lib.md to
 voice-sample.md when lib.md passes checks.py. report writes report.md and
@@ -105,8 +107,12 @@ def review(f, page, number):
 
 
 def mentions(f):
+    """Compare only pages worth trusting: those in this run's scope, and those that already pass checks.py."""
     plan = common.load_plan(f)
-    pages = {p.name: checks.records(p.read_text(encoding="utf-8")) for p in sorted(f.src.glob("*.md"))}
+    active = set(common.scope_pages(common.load_scope(f)))
+    items, _, _ = checks.inventory(f)
+    trusted = [p for p in sorted(f.src.glob("*.md")) if p.name in active or not checks.page_failures(f, p.name, plan, items)]
+    pages = {p.name: checks.records(p.read_text(encoding="utf-8")) for p in trusted}
     units = {page: checks.units(recs) for page, recs in pages.items()}
     subjects = [(t["term"], t["owner"], re.compile(r"(?<![\w-])" + re.escape(t["term"]) + r"s?(?![\w-])", re.I))
                 for t in plan["terms"]]
